@@ -3,6 +3,7 @@ package me.hhac.android.greetings
 import android.app.Activity
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
@@ -22,7 +23,7 @@ import ua.naiksoftware.stomp.StompClient
 class GreetingActivity : AppCompatActivity() {
 
     private var stompClient: StompClient = Stomp.over(Stomp.ConnectionProvider.OKHTTP,
-    "ws://${if (isEmulator()) BuildConfig.IP_EMULATOR else BuildConfig.IP_DEVICE}/gs-guide-websocket/websocket")
+    "ws://${if (isEmulator()) BuildConfig.URL_EMULATOR else BuildConfig.URL_DEVICE}:${BuildConfig.PORT}/gs-guide-websocket/websocket")
 
     private var disposable : Disposable? = null
     private var disposableSend : Disposable? = null
@@ -33,14 +34,6 @@ class GreetingActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_greeting)
-
-        stompClient.connect()
-        Thread.sleep(300)
-
-        if (stompClient.isConnected) {
-            connectBtn.isEnabled = false
-            disconnectBtn.isEnabled = true
-        }
 
         disposable = stompClient.topic("/topic/greetings")
             .subscribeOn(Schedulers.io())
@@ -63,14 +56,10 @@ class GreetingActivity : AppCompatActivity() {
     }
 
     fun onClickConnect(v: View) {
-        stompClient.reconnect()
+        stompClient.connect()
 
-        Thread.sleep(300)
-
-        if (stompClient.isConnected) {
-            connectBtn.isEnabled = false
-            disconnectBtn.isEnabled = true
-        }
+        connectBtn.isEnabled = false
+        disconnectBtn.isEnabled = true
     }
 
     fun onClickDisconnect(v: View) {

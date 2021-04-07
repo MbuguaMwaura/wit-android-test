@@ -16,8 +16,41 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField "String", "IP_EMULATOR", "\"10.0.2.2:8080\""
-        buildConfigField "String", "IP_DEVICE", "\"{TYPE YOUR GREETINGS SERVICE IP}\""
+        def props = new Properties()
+        file("$rootDir/local.properties").withInputStream { props.load(it) }
+
+        def greetings_url = props.getProperty("greetings.url")
+
+        if (greetings_url == null || greetings_url.trim().isEmpty()) {
+            greetings_url = "localhost"
+            def warning_ip_address_message = "Default URL Address is ${greetings_url}.\n" +
+                    "If you want to use a custom URL address for this service set it the \"greetings.url\" constant in the\n" +
+                    "${rootDir.path}/local.properties file."
+
+            println warning_ip_address_message
+        }
+
+        buildConfigField "String", "URL_DEVICE", "\"" + greetings_url + "\""
+
+        if (greetings_url == "localhost" || greetings_url == "127.0.0.1") {
+            buildConfigField "String", "URL_EMULATOR", "\"10.0.2.2\""
+        } else {
+            buildConfigField "String", "URL_EMULATOR", "URL_DEVICE"
+        }
+
+        def greetings_port = props.getProperty("greetings.port")
+
+        if (greetings_port == null || greetings_port.trim().isEmpty()) {
+            greetings_port = "8080"
+
+            def warning_port_message = "Default port is ${greetings_port}.\n" +
+                    "If you want to use a custom port for this service set it the \"greetings.port\" constant in the\n" +
+                    "${rootDir.path}/local.properties file."
+
+            println warning_port_message
+        }
+
+        buildConfigField "String", "PORT", "\"" + greetings_port + "\""
     }
 
     buildTypes {

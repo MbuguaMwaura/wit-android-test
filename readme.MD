@@ -1,6 +1,7 @@
 # Greeting Web Socket Android Client
 
-This is a small app that sent messages to the [Spring Boot Greeting Websocket Service](https://github.com/spring-guides/gs-messaging-stomp-websocket). This messages are displayed to all the devices with app installed or web pages connected to service.
+This is a small app that sent messages to the [Spring Boot Greeting Websocket Service](https://github.com/spring-guides/gs-messaging-stomp-websocket).
+This messages are displayed to all the devices with app installed or web pages connected to service.
 
 Check the App Demo in Youtube.
 
@@ -8,17 +9,22 @@ Check the App Demo in Youtube.
 
 ## Requirements
 - Android Studio 3.1.6
-- Minimium SDK 16
+- Minimum SDK 16
 
 ## Setup
-Download, build and run the [Spring Boot Greeting Websocket Service](https://github.com/spring-guides/gs-messaging-stomp-websocket).
+### Greeting Websocket Service
+Download, build and run the [Spring Boot Greeting Websocket Service](https://github.com/spring-guides/gs-messaging-stomp-websocket)
+in the server of your preference.
 
-If you want to connect your [Spring Boot Greeting Websocket Service](https://github.com/spring-guides/gs-messaging-stomp-websocket) with a real physical device, in the `./Greetings/app/build.gradle` file you need to __set your Greeting Service IP address__ for the `IP_DEVICE buildConfigField`.
+### Set an custom URL and PORT
+In the `[root_project_path]/local.properties` file set the following constants:
+``` 
+greetings.url=example.com
+greetings.port=1234
+```
 
-Example:
+If `greetings.url` is not set, the default URL will be `localhost`.
+If `greetings.port` is not set, the default port will be `8080`.
 
-`buildConfigField "String", "IP_DEVICE", "\"192.168.0.100\""`
-
-Then build this source and run it in a Android Device or Emulator.
 
 
