@@ -1,6 +1,6 @@
 # Greeting Web Socket Android Client
 
-This is a small app that sent messages to the [Spring Boot Greeting Websocket Service](https://github.com/hectorhalpizar/greeting-web-socket-service). This messages are displayed to all the devices with app installed or web pages connected to service.
+This is a small app that sent messages to the [Spring Boot Greeting Websocket Service](https://github.com/spring-guides/gs-messaging-stomp-websocket). This messages are displayed to all the devices with app installed or web pages connected to service.
 
 Check the App Demo in Youtube.
 
@@ -11,9 +11,9 @@ Check the App Demo in Youtube.
 - Minimium SDK 16
 
 ## Setup
-Download, build and run the [Spring Boot Greeting Websocket Service](https://github.com/hectorhalpizar/greeting-web-socket-service).
+Download, build and run the [Spring Boot Greeting Websocket Service](https://github.com/spring-guides/gs-messaging-stomp-websocket).
 
-If you want to connect your [Spring Boot Greeting Websocket Service](https://github.com/hectorhalpizar/greeting-web-socket-service) with a real physical device, in the `./Greetings/app/build.gradle` file you need to __set your Greeting Service IP address__ for the `IP_DEVICE buildConfigField`.
+If you want to connect your [Spring Boot Greeting Websocket Service](https://github.com/spring-guides/gs-messaging-stomp-websocket) with a real physical device, in the `./Greetings/app/build.gradle` file you need to __set your Greeting Service IP address__ for the `IP_DEVICE buildConfigField`.
 
 Example:
 
