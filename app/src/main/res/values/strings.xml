@@ -1,10 +1,8 @@
 <resources>
     <string name="app_name">Greetings</string>
-    <string name="whats_your_name">What´s your name?</string>
     <string name="send_message">Send</string>
     <string name="connect">Connect</string>
     <string name="disconnect">Disconnect</string>
     <string name="web_socket_connection">Web Socket Connection</string>
-    <string name="greetings">Greetings</string>
-    <string name="your_name_here">Your name here...</string>
+    <string name="comment_here">Comment here...</string>
 </resources>

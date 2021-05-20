@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.ArrayAdapter
+import android.widget.ListView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.squareup.moshi.Moshi
@@ -14,16 +16,22 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_greeting.*
-import me.hhac.android.greetings.models.Greeting
-import me.hhac.android.greetings.models.HelloMessage
+import me.hhac.android.greetings.models.*
 import ua.naiksoftware.stomp.Stomp
 import ua.naiksoftware.stomp.StompClient
 
 
 class GreetingActivity : AppCompatActivity() {
 
+    private var token = "b3777048-7ea7-417c-a038-e0c38b96e3be"
+
+    var listView: ListView? = null
+
+    var messages : ArrayList<CommentResponseDto> = ArrayList()
+
+
     private var stompClient: StompClient = Stomp.over(Stomp.ConnectionProvider.OKHTTP,
-    "ws://${if (isEmulator()) BuildConfig.URL_EMULATOR else BuildConfig.URL_DEVICE}:${BuildConfig.PORT}/gs-guide-websocket/websocket")
+    "ws://${if (isEmulator()) BuildConfig.URL_EMULATOR else BuildConfig.URL_DEVICE}:${BuildConfig.PORT}/wit-forum/websocket?access_token=${token}")
 
     private var disposable : Disposable? = null
     private var disposableSend : Disposable? = null
@@ -34,17 +42,10 @@ class GreetingActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_greeting)
+        listView = findViewById(R.id.listview);
+        val adapter = ArrayAdapter<CommentResponseDto>(this,R.layout.activity_greeting,messages)
+        listView?.adapter = adapter
 
-        disposable = stompClient.topic("/topic/greetings")
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe ({ topicMessage ->
-                val greeting = moshi.adapter(Greeting::class.java).fromJson(topicMessage.payload)
-                greetingText += "\n" + greeting?.content
-                greeting_text.text = greetingText
-            }, {
-                Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show()
-            })
 
     }
 
@@ -57,6 +58,23 @@ class GreetingActivity : AppCompatActivity() {
 
     fun onClickConnect(v: View) {
         stompClient.connect()
+
+        disposable = stompClient.topic("/discussion/comment")
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe ({ topicMessage ->
+                Toast.makeText(this, "message received", Toast.LENGTH_LONG).show()
+                val greeting = moshi.adapter(BaseApiResponse::class.java).fromJson(topicMessage.payload)
+                greetingText += "\n" + greeting?.data
+
+                val commentReponse = moshi.adapter(CommentResponseDto::class.java).fromJsonValue(greeting?.data)
+                greeting_text.text = commentReponse?.commentText
+                messages.add(commentReponse!!)
+            }, {
+                Toast.makeText(this, "Error ${it.message}", Toast.LENGTH_LONG).show()
+                greeting_text.text = "ws://${if (isEmulator()) BuildConfig.URL_EMULATOR else BuildConfig.URL_DEVICE}:${BuildConfig.PORT}/wit-forum/websocket?access_token=${token}"
+
+            })
 
         connectBtn.isEnabled = false
         disconnectBtn.isEnabled = true
@@ -83,11 +101,12 @@ class GreetingActivity : AppCompatActivity() {
         }
 
         val helloMessage = HelloMessage(hello_message.text.toString())
+        val commentDto = CommentDto(hello_message.text.toString(),3)
 
-        val json = moshi.adapter(HelloMessage::class.java).toJson(helloMessage)
+        val json = moshi.adapter(CommentDto::class.java).toJson(commentDto)
 
         disposableSend?.dispose()
-        disposableSend = stompClient.send("/app/hello", json).subscribe()
+        disposableSend = stompClient.send("/wit/user-all", json).subscribe()
     }
 
     private fun isEmulator(): Boolean {
